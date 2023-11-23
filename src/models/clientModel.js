@@ -35,7 +35,7 @@ const updateClient = async (id, clientData) => {
   try {
     const values = [clientData.name, id]
     await client.query('UPDATE Client SET name=? WHERE ID=?;', values)
-    console.log(`BANCO: Cliente ${clientData.name} atualizado com sucesso.`)
+    console.log(`BANCO: Cliente ${clientData.id} atualizado com sucesso.`)
   } catch (err) {
     console.error(`BANCO: Erro ao atualizar o cliente ${clientData.name}: ${err.message}`)
   }
