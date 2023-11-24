@@ -28,25 +28,20 @@ const insertSale = async (newSale) => {
   try {
     await connection.beginTransaction();
 
-    // Inserir a nova venda
     const insertQuery = "INSERT INTO Sale (Client_ID, Product_ID, Quantity, Total) VALUES (?, ?, ?, (SELECT Price * ? FROM Product WHERE ID = ?))";
     const insertValues = [newSale.Client_ID, newSale.Product_ID, newSale.Quantity, newSale.Quantity, newSale.Product_ID];
     await connection.query(insertQuery, insertValues);
 
-    // Atualizar o estoque do produto
     const updateQuery = "UPDATE Product SET Stock = Stock - ? WHERE ID = ?";
     const updateValues = [newSale.Quantity, newSale.Product_ID];
     await connection.query(updateQuery, updateValues);
 
-    // Confirmar a transação
     await connection.commit();
     console.log(`BANCO: Venda criada com sucesso.`);
   } catch (err) {
-    // Reverter a transação em caso de erro
     await connection.rollback();
     console.error(`BANCO: Erro ao criar a venda: ${err.message}`);
   } finally {
-    // Liberar a conexão
     connection.release()
   }
 }
@@ -70,7 +65,6 @@ const updateSale = async (id, saleData) => {
   } catch (err) {
     console.error(`BANCO: Erro ao atualizar a venda ${id}: ${err.message}`);
   } finally {
-    // Liberar a conexão
     connection.release()
   }
 }

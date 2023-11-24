@@ -25,22 +25,22 @@ const getOneProduct = async (id) => {
 const insertProduct = async (newProduct) => {
   try {
     const query = 'INSERT INTO Product(name, price, stock) VALUES (?, ?, ?)';
-    const values = [newProduct.name, newProduct.price, newProduct.stock];
+    const values = [newProduct.Name, newProduct.Price, newProduct.Stock];
     await product.query(query, values);
-    console.log(`BANCO: Produto ${newProduct.name} criado com sucesso.`);
+    console.log(`BANCO: Produto ${newProduct.Name} criado com sucesso.`);
   } catch (err) {
-    console.error(`BANCO: Erro ao criar o produto ${newProduct.name}: ${err.message}`);
+    console.error(`BANCO: Erro ao criar o produto ${newProduct.Name}: ${err.message}`);
   }
 }
 
 const updateProduct = async (id, productData) => {
   try {
     const query = 'UPDATE Product SET name=?, price=?, stock=? WHERE ID=?;'
-    const values = [productData.name, productData.price, productData.stock, id]
+    const values = [productData.Name, productData.Price, productData.Stock, id]
     await product.query(query, values)
     console.log(`BANCO: Produto ${productData.id} atualizado com sucesso.`)
   } catch (err) {
-    console.error(`BANCO: Erro ao atualizar o produto ${productData.name}: ${err.message}`)
+    console.error(`BANCO: Erro ao atualizar o produto ${productData.Name}: ${err.message}`)
   }
 }
 

@@ -26,22 +26,22 @@ const getOneClient = async (id) => {
 const insertClient = async (newClient) => {
   try {
     const query = "INSERT INTO Client(name) VALUES (?);"
-    const values = [newClient.name]
+    const values = [newClient.Name]
     await client.query(query, values)
-    console.log(`BANCO: Cliente ${newClient.name} criado com sucesso.`)
+    console.log(`BANCO: Cliente ${newClient.Name} criado com sucesso.`)
   } catch (err) {
-    console.error(`BANCO: Erro ao criar o cliente ${newClient.name}: ${err.message}`)
+    console.error(`BANCO: Erro ao criar o cliente ${newClient.Name}: ${err.message}`)
   }
 }
 
 const updateClient = async (id, clientData) => {
   try {
     const query = "UPDATE Client SET name=? WHERE ID=?;"
-    const values = [clientData.name, id]
+    const values = [clientData.Name, id]
     await client.query(query, values)
     console.log(`BANCO: Cliente ${id} atualizado com sucesso.`)
   } catch (err) {
-    console.error(`BANCO: Erro ao atualizar o cliente ${clientData.name}: ${err.message}`)
+    console.error(`BANCO: Erro ao atualizar o cliente ${clientData.Name}: ${err.message}`)
   }
 }
 
