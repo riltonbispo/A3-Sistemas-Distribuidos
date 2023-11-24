@@ -2,6 +2,7 @@ require('dotenv').config()
 const express = require('express')
 const clientRoutes = require('./routes/clientRoutes')
 const productRoutes = require('./routes/productRoutes')
+const saleRoutes = require('./routes/saleRoutes')
 
 const app = express()
 
@@ -10,6 +11,7 @@ app.use(express.json())
 
 app.use('/clients', clientRoutes);
 app.use('/products', productRoutes);
+app.use('/sales', saleRoutes);
 
 app.get('/', (req, res) => {
   res.json({
