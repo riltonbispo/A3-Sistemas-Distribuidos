@@ -14,7 +14,7 @@ const getOneClient = async (req, res) => {
   try {
     const id = parseInt(req.params.id)
     const result = await db.getOneClient(id)
-    result ? res.json(result) : res.status(404)
+    result ? res.json(result) : res.sendStatus(404)
   } catch (err) {
     console.log(`API: Erro ao buscar Clientes: ${err}`)
     res.sendStatus(500)
