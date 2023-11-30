@@ -1,8 +1,15 @@
-const db = require('../models/saleModal')
+import {
+  getSales,
+  getOneSale as oneSale,
+  insertSale,
+  updateSale as uSale,
+  deleteSale as delSale
+} from '../models/saleModel.js';
 
-const getAllSales = async (req, res) => {
+
+export const getAllSales = async (req, res) => {
   try {
-    const result = await db.getSales()
+    const result = await getSales()
     res.json(result)
   } catch (err) {
     console.log(`API: Erro ao buscar Sales: ${err}`)
@@ -10,10 +17,10 @@ const getAllSales = async (req, res) => {
   }
 }
 
-const getOneSale = async (req, res) => {
+export const getOneSale = async (req, res) => {
   try {
     const id = parseInt(req.params.id)
-    const result = await db.getOneSale(id)
+    const result = await oneSale(id)
     result ? res.json(result) : res.sendStatus(404)
   } catch (err) {
     console.log(`API: Erro ao buscar Sale: ${err}`)
@@ -21,10 +28,10 @@ const getOneSale = async (req, res) => {
   }
 }
 
-const createSale = async (req, res) => {
+export const createSale = async (req, res) => {
   try {
     const sale = req.body
-    await db.insertSale(sale)
+    await insertSale(sale)
     res.sendStatus(201)
   } catch (err) {
     console.log(`API: Erro ao criar Sales: ${err}`)
@@ -32,11 +39,11 @@ const createSale = async (req, res) => {
   }
 }
 
-const updateSale = async (req, res) => {
+export const updateSale = async (req, res) => {
   try {
     const id = parseInt(req.params.id)
     const sale = req.body
-    await db.updateSale(id, sale)
+    await uSale(id, sale)
     res.sendStatus(200)
   } catch (err) {
     console.log(`API: Erro ao atualizar Sale: ${err}`)
@@ -44,21 +51,13 @@ const updateSale = async (req, res) => {
   }
 }
 
-const deleteSale = async (req, res) => {
+export const deleteSale = async (req, res) => {
   try {
     const id = parseInt(req.params.id)
-    await db.deleteSale(id)
+    await delSale(id)
     res.sendStatus(204)
   } catch (err) {
     console.log(`API: Erro ao deletar Sale: ${err}`)
     res.sendStatus(500)
   }
-}
-
-module.exports = {
-  getAllSales,
-  getOneSale,
-  createSale,
-  updateSale,
-  deleteSale
 }

@@ -1,8 +1,14 @@
-const db = require('../models/clientModel')
+import {
+  getClients,
+  getOneClient as oneClient,
+  insertClient,
+  updateClient as uClient,
+  deleteClient as delClient
+} from '../models/clientModel.js';
 
-const getAllClients = async (req, res) => {
+export const getAllClients = async (req, res) => {
   try {
-    const result = await db.getClients()
+    const result = await getClients()
     res.json(result)
   } catch (err) {
     console.error(`API: Erro ao buscar Clientes: ${err}`)
@@ -10,10 +16,10 @@ const getAllClients = async (req, res) => {
   }
 }
 
-const getOneClient = async (req, res) => {
+export const getOneClient = async (req, res) => {
   try {
     const id = parseInt(req.params.id)
-    const result = await db.getOneClient(id)
+    const result = await oneClient(id)
     result ? res.json(result) : res.sendStatus(404)
   } catch (err) {
     console.log(`API: Erro ao buscar Clientes: ${err}`)
@@ -21,10 +27,10 @@ const getOneClient = async (req, res) => {
   }
 }
 
-const createClient = async (req, res) => {
+export const createClient = async (req, res) => {
   try {
     const client = req.body
-    await db.insertClient(client)
+    await insertClient(client)
     res.sendStatus(201)
   } catch (err) {
     console.log(`API: Erro ao criar client: ${err}`)
@@ -32,11 +38,11 @@ const createClient = async (req, res) => {
   }
 }
 
-const updateClient = async (req, res) => {
+export const updateClient = async (req, res) => {
   try {
     const id = parseInt(req.params.id)
     const client = req.body
-    await db.updateClient(id, client)
+    await uClient(id, client)
     res.sendStatus(200)
   } catch (err) {
     console.log(`API: Erro ao atualizar Client: ${err}`)
@@ -44,21 +50,13 @@ const updateClient = async (req, res) => {
   }
 }
 
-const deleteClient = async (req, res) => {
+export const deleteClient = async (req, res) => {
   try {
     const id = parseInt(req.params.id)
-    await db.deleteClient(id)
+    await delClient(id)
     res.sendStatus(204)
   } catch (err) {
     console.log(`API: Erro ao deletar Client: ${err}`)
     res.sendStatus(500)
   }
 }
-
-module.exports = {
-  getAllClients,
-  getOneClient,
-  createClient,
-  updateClient,
-  deleteClient
-};

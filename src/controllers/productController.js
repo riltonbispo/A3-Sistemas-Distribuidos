@@ -1,8 +1,14 @@
-const db = require('../models/productModal')
+import {
+  getProducts,
+  getOneProduct as oneProduct,
+  insertProduct,
+  updateProduct as uProduct,
+  deleteProduct as delProduct
+} from '../models/productModel.js';
 
-const getAllProducts = async (req, res) => {
+export const getAllProducts = async (req, res) => {
   try {
-    const result = await db.getProducts()
+    const result = await getProducts()
     res.json(result)
   } catch (err) {
     console.error(`API: Erro ao buscar Produtos: ${err}`)
@@ -10,10 +16,10 @@ const getAllProducts = async (req, res) => {
   }
 }
 
-const getOneProduct = async (req, res) => {
+export const getOneProduct = async (req, res) => {
   try {
     const id = parseInt(req.params.id)
-    const result = await db.getOneProduct(id)
+    const result = await oneProduct(id)
     result ? res.json(result) : res.status(404)
   } catch (err) {
     console.log(`API: Erro ao buscar Produto: ${err}`)
@@ -21,10 +27,10 @@ const getOneProduct = async (req, res) => {
   }
 }
 
-const createProduct = async (req, res) => {
+export const createProduct = async (req, res) => {
   try {
     const product = req.body
-    await db.insertProduct(product)
+    await insertProduct(product)
     res.sendStatus(201)
   } catch (err) {
     console.log(`API: Erro ao criar produto: ${err}`)
@@ -32,11 +38,11 @@ const createProduct = async (req, res) => {
   }
 }
 
-const updateProduct = async (req, res) => {
+export const updateProduct = async (req, res) => {
   try {
     const id = parseInt(req.params.id)
     const product = req.body
-    await db.updateProduct(id, product)
+    await uProduct(id, product)
     res.sendStatus(200)
   } catch (err) {
     console.log(`API: Erro ao atualizar Produto: ${err}`)
@@ -44,21 +50,13 @@ const updateProduct = async (req, res) => {
   }
 }
 
-const deleteProduct = async (req, res) => {
+export const deleteProduct = async (req, res) => {
   try {
     const id = parseInt(req.params.id)
-    await db.deleteProduct(id)
+    await delProduct(id)
     res.sendStatus(204)
   } catch (err) {
     console.log(`API: Erro ao deletar Produto: ${err}`)
     res.sendStatus(500)
   }
 }
-
-module.exports = {
-  getAllProducts,
-  getOneProduct,
-  createProduct,
-  updateProduct,
-  deleteProduct
-};
