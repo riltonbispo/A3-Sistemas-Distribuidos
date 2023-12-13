@@ -1,24 +1,30 @@
-import { openDb } from "../configDB.js"
-const db = await openDb()
+import { sequelize } from "../configDB.js";
+import { DataTypes } from "sequelize";
 
-const createProductTable = async () => {
-  try {
-    db.exec('CREATE TABLE IF NOT EXISTS Product (' +
-      'ID INTEGER PRIMARY KEY AUTOINCREMENT, ' +
-      'Name TEXT NOT NULL, ' +
-      'Price NUMERIC(10, 2) DEFAULT NULL, ' +
-      'Stock INTEGER DEFAULT NULL' +
-      ')');
-  } catch (error) {
-    console.log(error)
-  }
-}
+export const Product = sequelize.define('Product', {
+  ID: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  Name: {
+    type: DataTypes.STRING(255),
+    allowNull: false,
+  },
+  Price: {
+    type: DataTypes.NUMERIC(10, 2),
+    defaultValue: null,
+  },
+  Stock: {
+    type: DataTypes.INTEGER,
+    defaultValue: null,
+  },
+});
 
 export const getProducts = async () => {
   try {
-    const query = 'SELECT * FROM Product;'
-    const result = await db.all(query)
-    return result
+    const products = await Product.findAll();
+    return products;
   } catch (err) {
     console.log(`BANCO: Erro ao buscar os produtos: ${err}`)
   }
@@ -26,9 +32,12 @@ export const getProducts = async () => {
 
 export const getOneProduct = async (id) => {
   try {
-    const query = "SELECT * FROM Product WHERE id=?;"
-    const result = await db.get(query, [id])
-    return result
+    const product = await Product.findOne({
+      where: {
+        ID: id,
+      },
+    });
+    return product;
   } catch (err) {
     console.log(`BANCO: Erro ao buscar o produto: ${id}`)
   }
@@ -36,10 +45,14 @@ export const getOneProduct = async (id) => {
 
 export const insertProduct = async (newProduct) => {
   try {
-    const query = 'INSERT INTO Product(name, price, stock) VALUES (?, ?, ?)';
-    const values = [newProduct.Name, newProduct.Price, newProduct.Stock];
-    await db.run(query, values);
-    console.log(`BANCO: Produto ${newProduct.Name} criado com sucesso.`);
+    const createdProduct = await Product.create({
+      Name: newProduct.Name,
+      Price: newProduct.Price,
+      Stock: newProduct.Stock,
+    });
+
+    console.log(`BANCO: Produto ${createdProduct.Name} criado com sucesso.`);
+    return createdProduct;
   } catch (err) {
     console.error(`BANCO: Erro ao criar o produto ${newProduct.Name}: ${err.message}`);
   }
@@ -47,9 +60,18 @@ export const insertProduct = async (newProduct) => {
 
 export const updateProduct = async (id, productData) => {
   try {
-    const query = 'UPDATE Product SET name=?, price=?, stock=? WHERE ID=?;'
-    const values = [productData.Name, productData.Price, productData.Stock, id]
-    await db.run(query, values)
+    await Product.update(
+      {
+        Name: productData.Name,
+        Price: productData.Price,
+        Stock: productData.Stock,
+      },
+      {
+        where: {
+          ID: id,
+        },
+      }
+    )
     console.log(`BANCO: Produto ${productData.id} atualizado com sucesso.`)
   } catch (err) {
     console.error(`BANCO: Erro ao atualizar o produto ${productData.Name}: ${err.message}`)
@@ -58,13 +80,13 @@ export const updateProduct = async (id, productData) => {
 
 export const deleteProduct = async (id) => {
   try {
-    const query = 'DELETE FROM Product WHERE ID=?;'
-    const values = [id]
-    await db.run(query, values)
+    await Product.destroy({
+      where: {
+        ID: id
+      }
+    })
     console.log(`BANCO: Produto ${id} deletado com sucesso.`)
   } catch (err) {
     console.error(`BANCO: Erro ao deletar o produto ${id}: ${err.message}`)
   }
 }
-
-export default createProductTable

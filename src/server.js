@@ -4,7 +4,7 @@ import productRoutes from './routes/productRoutes.js'
 import saleRoutes from './routes/saleRoutes.js'
 import adminRoutes from './routes/adminRoutes.js'
 import { Client } from './models/clientModel.js'
-import createProductTable from './models/productModel.js'
+import { Product } from './models/productModel.js'
 import createTableSale from './models/saleModel.js'
 import {
   createConsumptionByClient,
@@ -27,7 +27,6 @@ const syncDatabase = async () => {
   }
 }
 createTableSale()
-createProductTable()
 createConsumptionByClient()
 createLowStockProducts()
 createMostSoldProductsView()
