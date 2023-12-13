@@ -1,115 +1,90 @@
-import { openDb } from "../configDB.js"
-const db = await openDb()
+import { sequelize } from "../configDB.js"
+import { Op } from "sequelize"
+import { Sale } from '../models/saleModel.js'
+import { Product } from '../models/productModel.js'
+import { Client } from '../models/clientModel.js'
 
-export const createMostSoldProductsView = async () => {
-
-  db.run(`
-      CREATE VIEW IF NOT EXISTS MostSoldProducts AS
-      SELECT
-          p.ID AS ProductID,
-          p.Name AS ProductName,
-          SUM(s.Quantity) AS TotalSold
-      FROM
-          Sale s
-      JOIN
-          Product p ON s.Product_ID = p.ID
-      GROUP BY
-          s.Product_ID;
-    `);
-}
-
-export const createProductsByClient = async () => {
+export const getTopSellingProduct = async () => {
   try {
-    db.run(`
-    CREATE VIEW IF NOT EXISTS ProductsByClient AS
-    SELECT
-        c.ID AS ClientID,
-        c.Name AS ClientName,
-        p.ID AS ProductID,
-        p.Name AS ProductName,
-        s.Quantity AS QuantityPurchased
-    FROM
-        Sale s
-    JOIN
-        Client c ON s.Client_ID = c.ID
-    JOIN
-        Product p ON s.Product_ID = p.ID;
-  `)
-  } catch (error) {
-    console.log(error)
+    const result = await Sale.findAll({
+      attributes: [
+        "Product_ID",
+        [sequelize.fn("sum", sequelize.col("Quantity")), "totalQuantity"],
+      ],
+      group: ["Product_ID"],
+      order: [[sequelize.literal("totalQuantity"), "DESC"]],
+      limit: 1,
+      include: [
+        {
+          model: Product,
+          attributes: ["Name"],
+        },
+      ],
+    });
+    return result;
+  } catch (err) {
+    console.error(`BANCO: Erro ao gerar relatório de produto mais vendido: ${err.message}`);
   }
-}
+};
 
-export const createConsumptionByClient = async () => {
+export const getProductReportByClient = async (clientId) => {
   try {
-    db.run(`
-      CREATE VIEW IF NOT EXISTS ConsumptionByClient AS
-      SELECT
-          c.ID AS ClientID,
-          c.Name AS ClientName,
-          AVG(s.Quantity) AS AverageConsumption
-      FROM
-          Sale s
-      JOIN
-          Client c ON s.Client_ID = c.ID
-      GROUP BY
-          s.Client_ID;
-    `)
-  } catch (error) {
-    console.log(error)
+    const result = await Sale.findAll({
+      attributes: [
+        [sequelize.literal('"Product"."Name"'), "ProductName"],
+        [sequelize.fn("sum", sequelize.col("Quantity")), "totalQuantity"],
+      ],
+      where: {
+        Client_ID: clientId,
+      },
+      include: [
+        {
+          model: Product,
+          attributes: [],
+        },
+      ],
+      group: [sequelize.literal('"Product"."Name"')],
+    });
+
+    return result;
+  } catch (err) {
+    console.error(`BANCO: Erro ao gerar relatório de produto por cliente: ${err.message}`);
   }
-}
+};
 
-export const createLowStockProducts = async () => {
-  db.run(`
-      CREATE VIEW IF NOT EXISTS LowStockProducts AS
-      SELECT
-          p.ID AS ProductID,
-          p.Name AS ProductName,
-          p.Stock AS CurrentStock
-      FROM
-          Product p
-      WHERE
-          p.Stock < 10;
-    `)
-}
-
-export const getMostSoldProducts = async () => {
+export const getAverageConsumptionByClient = async () => {
   try {
-    const query = "SELECT * FROM MostSoldProducts ORDER BY TotalSold DESC"
-    const result = await db.all(query)
-    return result
-  } catch (error) {
-    console.log(`BANCO: Erro ao obter produtos mais vendidos ${error}`)
-  }
-}
+    const result = await Sale.findAll({
+      attributes: [
+        'Client_ID',
+        [sequelize.fn('avg', sequelize.col('Quantity')), 'averageQuantity'],
+      ],
+      group: ['Client_ID'],
+      include: [
+        {
+          model: Client,
+          attributes: ['Name'],
+        },
+      ],
+    });
 
-export const getProductsByClient = async (id) => {
-  try {
-    const query = "SELECT * FROM ProductsByClient WHERE ClientID = ?"
-    const result = await db.all(query, [id])
-    return result
-  } catch (error) {
-    console.log(`BANCO: Erro ao obter produto por client ${error}`)
+    return result;
+  } catch (err) {
+    console.error(`BANCO: Erro ao gerar relatório de consumo médio do cliente: ${err.message}`);
   }
-}
-
-export const getConsumptionByClient = async () => {
-  try {
-    const query = "SELECT * FROM ConsumptionByClient;"
-    const result = await db.all(query)
-    return result
-  } catch (error) {
-    console.log(`BANCO: Erro ao obter consumo medio de clientes ${error}`)
-  }
-}
+};
 
 export const getLowStockProducts = async () => {
   try {
-    const query = "SELECT * FROM LowStockProducts;"
-    const result = await db.all(query)
-    return result
-  } catch (error) {
-    console.log(`BANCO: Erro ao obter produtos com baixo estoque ${error}`)
+    const result = await Product.findAll({
+      where: {
+        Stock: {
+          [Op.lt]: 15,
+        },
+      },
+    });
+    return result;
+  } catch (err) {
+    console.error(`BANCO: Erro ao gerar relatório de produto com baixo estoque: ${err.message}`);
   }
-}
+};

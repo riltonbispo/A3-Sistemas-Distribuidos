@@ -37,6 +37,8 @@ export const Sale = sequelize.define('Sale', {
   },
 });
 
+Sale.belongsTo(Client, { foreignKey: 'Client_ID' });
+Sale.belongsTo(Product, { foreignKey: 'Product_ID' });
 
 const getRandomInt = (min, max) => {
   return Math.floor(Math.random() * (max - min)) + min;

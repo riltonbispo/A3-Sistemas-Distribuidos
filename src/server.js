@@ -6,12 +6,6 @@ import adminRoutes from './routes/adminRoutes.js'
 import { Client, seedClients } from './models/clientModel.js'
 import { Product, seedProducts } from './models/productModel.js'
 import { Sale, seedSales } from './models/saleModel.js'
-import {
-  createConsumptionByClient,
-  createLowStockProducts,
-  createMostSoldProductsView,
-  createProductsByClient
-} from './models/adminModel.js'
 import { sequelize } from './configDB.js'
 
 const PORT = 3000;
@@ -29,10 +23,6 @@ const syncDatabase = async () => {
     console.log('Erro ao sincronizar dados:', error)
   }
 }
-createConsumptionByClient()
-createLowStockProducts()
-createMostSoldProductsView()
-createProductsByClient()
 
 app.use('/clients', clientRoutes);
 app.use('/products', productRoutes);

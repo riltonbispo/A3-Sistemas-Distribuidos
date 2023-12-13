@@ -1,9 +1,8 @@
 import * as model from '../models/adminModel.js'
 
-
 export const getMostSoldProducts = async (req,res) => {
   try {
-    const result = await model.getMostSoldProducts()
+    const result = await model.getTopSellingProduct()
     result ? res.json(result) : res.status(404)
   } catch (error) {
     console.log(`API: Erro ao buscar produtos mais vendidos`)
@@ -14,7 +13,7 @@ export const getMostSoldProducts = async (req,res) => {
 export const getProductsByClient = async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const result = await model.getProductsByClient(id);
+    const result = await model.getProductReportByClient(id);
     res.json(result);
     res.status(404);
   } catch (error) {
@@ -22,9 +21,10 @@ export const getProductsByClient = async (req, res) => {
     res.sendStatus(500);
   }
 };
+
 export const getConsumptionByClient = async (req,res) => {
   try {
-    const result = await model.getConsumptionByClient()
+    const result = await model.getAverageConsumptionByClient()
     result ? res.json(result) : res.status(404)
   } catch (error) {
     console.log(`API: Erro ao buscar consumo medio`)
