@@ -1,19 +1,22 @@
-import { openDb } from "../configDB.js"
-const db = await openDb()
+import { DataTypes } from "sequelize";
+import { sequelize } from "../configDB.js"
 
-const createTableClient = async () => {
-  try {
-    db.exec('CREATE TABLE IF NOT EXISTS Client (ID INTEGER PRIMARY KEY AUTOINCREMENT, Name TEXT NOT NULL)')
-  } catch (error) {
-    console.log(error)
-  }
-}
+export const Client = sequelize.define('Client', {
+  ID: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  Name: {
+    type: DataTypes.STRING(255),
+    allowNull: false,
+  },
+})
 
 export const getClients = async () => {
   try {
-    const query = "SELECT * FROM Client;"
-    const result = await db.all(query)
-    return result
+    const clients = await Client.findAll();
+    return clients;
   } catch (err) {
     console.log(`BANCO: Erro ao buscar os clientes: ${err}`)
   }
@@ -21,9 +24,12 @@ export const getClients = async () => {
 
 export const getOneClient = async (id) => {
   try {
-    const query = "SELECT * FROM Client WHERE id=?;"
-    const result = await db.get(query, [id])
-    return result
+    const client = await Client.findOne({
+      where: {
+        ID: id,
+      },
+    });
+    return client;
   } catch (err) {
     console.log(`BANCO: Erro ao buscar o cliente: ${id}`)
   }
@@ -31,9 +37,9 @@ export const getOneClient = async (id) => {
 
 export const insertClient = async (newClient) => {
   try {
-    const query = "INSERT INTO Client(name) VALUES (?);"
-    const values = [newClient.Name]
-    await db.run(query, values)
+    await Client.create({
+      Name: newClient.Name
+    })
     console.log(`BANCO: Cliente ${newClient.Name} criado com sucesso.`)
   } catch (err) {
     console.error(`BANCO: Erro ao criar o cliente ${newClient.Name}: ${err.message}`)
@@ -42,9 +48,11 @@ export const insertClient = async (newClient) => {
 
 export const updateClient = async (id, clientData) => {
   try {
-    const query = "UPDATE Client SET name=? WHERE ID=?;"
-    const values = [clientData.Name, id]
-    await db.run(query, values)
+    await Client.update({ Name: clientData.Name }, {
+      where: {
+        ID: id
+      }
+    })
     console.log(`BANCO: Cliente ${id} atualizado com sucesso.`)
   } catch (err) {
     console.error(`BANCO: Erro ao atualizar o cliente ${clientData.Name}: ${err.message}`)
@@ -53,13 +61,13 @@ export const updateClient = async (id, clientData) => {
 
 export const deleteClient = async (id) => {
   try {
-    const query = "DELETE FROM Client WHERE ID=?;"
-    const values = [id]
-    await db.run(query, values)
+    await Client.destroy({
+      where: {
+        ID: id
+      }
+    })
     console.log(`BANCO: Cliente ${id} deletado com sucesso.`)
   } catch (err) {
     console.error(`BANCO: Erro ao deletar o cliente ${id}: ${err.message}`)
   }
 }
-
-export default createTableClient
