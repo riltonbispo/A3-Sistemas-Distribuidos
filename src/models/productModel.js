@@ -21,6 +21,38 @@ export const Product = sequelize.define('Product', {
   },
 });
 
+export const seedProducts = async () => {
+  try {
+    const Products = [
+      { Name: "Smartphone Galaxy S21", Price: 899.99, Stock: 50 },
+      { Name: "Laptop Dell XPS 13", Price: 1299.99, Stock: 30 },
+      { Name: "Sony 55-inch 4K Smart TV", Price: 999.99, Stock: 20 },
+      { Name: "Bose QuietComfort 35 II Headphones", Price: 299.99, Stock: 40 },
+      { Name: "Canon EOS Rebel T7i DSLR Camera", Price: 749.99, Stock: 15 },
+      { Name: "Apple iPad Air", Price: 599.99, Stock: 25 },
+      { Name: "Samsung 1TB SSD", Price: 149.99, Stock: 60 },
+      { Name: "Nintendo Switch Console", Price: 299.99, Stock: 10 },
+      { Name: "LG 27-inch 4K Monitor", Price: 399.99, Stock: 18 },
+      { Name: "Dyson V11 Cordless Vacuum", Price: 499.99, Stock: 12 },
+      { Name: "Fitbit Charge 4 Fitness Tracker", Price: 129.99, Stock: 35 },
+      { Name: "Microsoft Surface Pro 7", Price: 899.99, Stock: 22 },
+      { Name: "Beats Studio3 Wireless Headphones", Price: 349.99, Stock: 30 },
+      { Name: "KitchenAid Stand Mixer", Price: 349.99, Stock: 15 },
+      { Name: "Garmin Forerunner 245 GPS Watch", Price: 299.99, Stock: 25 },
+    ];
+
+    const existingProducts = await Product.findAll();
+
+    if (existingProducts.length === 0) {
+      await Product.bulkCreate(Products);
+      console.log('Banco de dados sincronizado e 10 clientes criados');
+    }
+
+  } catch (err) {
+    console.error(`BANCO: Error seeding products: ${err.message}`);
+  }
+};
+
 export const getProducts = async () => {
   try {
     const products = await Product.findAll();

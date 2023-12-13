@@ -3,9 +3,9 @@ import clientRoutes from './routes/clientRoutes.js'
 import productRoutes from './routes/productRoutes.js'
 import saleRoutes from './routes/saleRoutes.js'
 import adminRoutes from './routes/adminRoutes.js'
-import { Client } from './models/clientModel.js'
-import { Product } from './models/productModel.js'
-import { Sale } from './models/saleModel.js'
+import { Client, seedClients } from './models/clientModel.js'
+import { Product, seedProducts } from './models/productModel.js'
+import { Sale, seedSales } from './models/saleModel.js'
 import {
   createConsumptionByClient,
   createLowStockProducts,
@@ -21,6 +21,9 @@ app.use(express.json())
 const syncDatabase = async () => {
   try {
     await sequelize.sync()
+    await seedClients()
+    await seedProducts()
+    await seedSales()
     console.log('Dados sincronizados')
   } catch (error) {
     console.log('Erro ao sincronizar dados:', error)

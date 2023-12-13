@@ -13,6 +13,32 @@ export const Client = sequelize.define('Client', {
   },
 })
 
+export const seedClients = async () => {
+  try {
+    const Names = [
+      "John Doe",
+      "Jane Doe",
+      "Alice Johnson",
+      "Bob Smith",
+      "Eva Davis",
+      "Michael Wilson",
+      "Olivia Brown",
+      "William Jones",
+      "Sophia Taylor",
+      "Daniel White"
+    ];
+    const existingClients = await Client.findAll();
+
+    if (existingClients.length === 0) {
+      await Client.bulkCreate(Names.map(name => ({ Name: name })));
+      console.log('Banco de dados sincronizado e 10 clientes criados');
+    }
+
+  } catch (err) {
+    console.error(`BANCO: Error seeding clients: ${err.message}`);
+  }
+};
+
 export const getClients = async () => {
   try {
     const clients = await Client.findAll();

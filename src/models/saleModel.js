@@ -37,6 +37,38 @@ export const Sale = sequelize.define('Sale', {
   },
 });
 
+
+const getRandomInt = (min, max) => {
+  return Math.floor(Math.random() * (max - min)) + min;
+};
+
+export const seedSales = async () => {
+  try {
+    const sales = Array.from({ length: 10 }, () => ({
+      Client_ID: getRandomInt(1, 11), 
+      Product_ID: getRandomInt(1, 16),
+      Quantity: getRandomInt(1, 8),
+    }));
+
+    const existingSales = await Sale.findAll();
+
+    if (existingSales.length === 0) {
+      for (const sale of sales) {
+        const product = await Product.findByPk(sale.Product_ID);
+        if (product) {
+          sale.Total = sale.Quantity * product.Price;
+        }
+      }
+
+      await Sale.bulkCreate(sales);
+      console.log('Banco de dados sincronizado e 10 vendas criadas com sucesso.');
+    }
+
+  } catch (err) {
+    console.error(`BANCO: Erro ao criar as vendas: ${err.message}`);
+  }
+};
+
 export const getSales = async () => {
   try {
     const sales = await Sale.findAll();
