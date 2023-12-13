@@ -57,13 +57,17 @@ export const getAverageConsumptionByClient = async () => {
     const result = await Sale.findAll({
       attributes: [
         'Client_ID',
-        [sequelize.fn('avg', sequelize.col('Quantity')), 'averageQuantity'],
+        [sequelize.fn('avg', sequelize.literal('("Product"."Price" * "Sale"."Quantity")')), 'averageConsumption'],
       ],
       group: ['Client_ID'],
       include: [
         {
           model: Client,
           attributes: ['Name'],
+        },
+        {
+          model: Product,
+          attributes: [],
         },
       ],
     });
@@ -73,6 +77,7 @@ export const getAverageConsumptionByClient = async () => {
     console.error(`BANCO: Erro ao gerar relatório de consumo médio do cliente: ${err.message}`);
   }
 };
+
 
 export const getLowStockProducts = async () => {
   try {
