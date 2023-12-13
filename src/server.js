@@ -5,7 +5,7 @@ import saleRoutes from './routes/saleRoutes.js'
 import adminRoutes from './routes/adminRoutes.js'
 import { Client } from './models/clientModel.js'
 import { Product } from './models/productModel.js'
-import createTableSale from './models/saleModel.js'
+import { Sale } from './models/saleModel.js'
 import {
   createConsumptionByClient,
   createLowStockProducts,
@@ -26,7 +26,6 @@ const syncDatabase = async () => {
     console.log('Erro ao sincronizar dados:', error)
   }
 }
-createTableSale()
 createConsumptionByClient()
 createLowStockProducts()
 createMostSoldProductsView()

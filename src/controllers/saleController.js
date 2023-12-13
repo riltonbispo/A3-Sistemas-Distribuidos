@@ -2,7 +2,6 @@ import {
   getSales,
   getOneSale as oneSale,
   insertSale,
-  updateSale as uSale,
   deleteSale as delSale
 } from '../models/saleModel.js';
 
@@ -35,18 +34,6 @@ export const createSale = async (req, res) => {
     res.sendStatus(201)
   } catch (err) {
     console.log(`API: Erro ao criar Sales: ${err}`)
-    res.sendStatus(500)
-  }
-}
-
-export const updateSale = async (req, res) => {
-  try {
-    const id = parseInt(req.params.id)
-    const sale = req.body
-    await uSale(id, sale)
-    res.sendStatus(200)
-  } catch (err) {
-    console.log(`API: Erro ao atualizar Sale: ${err}`)
     res.sendStatus(500)
   }
 }
